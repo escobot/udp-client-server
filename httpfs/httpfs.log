@@ -1,0 +1,36 @@
+12:05:42.413640 httpfs is listening at :8080
+12:05:42.413726 httpfs is running in verbose mode
+12:05:49.316088 &{GET / map[Host:localhost] HTTP/1.0 0xc000062300}
+12:05:49.316137 [queue=-1] packet #1, 127.0.0.1:47033 -> 127.0.0.1:8080, sz=35 is delivered
+12:05:49.316184 &{GET / map[Host:localhost] HTTP/1.0 0xc000062480}
+12:05:49.316204 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:47033, sz=35 is delivered
+12:13:59.875855 httpfs is listening at :8080
+12:13:59.875940 httpfs is running in verbose mode
+12:14:06.719656 &{GET / map[Host:localhost] HTTP/1.0 0xc000062300}
+12:14:06.719713 [queue=-1] packet #1, 127.0.0.1:47899 -> 127.0.0.1:8080, sz=35 is delivered
+12:14:06.719773 &{GET / map[Host:localhost] HTTP/1.0 0xc000062480}
+12:14:06.719799 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:47899, sz=35 is delivered
+12:31:07.382657 httpfs is listening at :8080
+12:31:07.382740 httpfs is running in verbose mode
+12:31:13.301279 HTTP/1.0 200 OK
+Content-Length: 48
+Connection: close
+Date: Sun Nov 18 12:31:13 EST 2018
+
+httpfs.go
+httpfs.log
+request.go
+response.go
+
+12:31:13.301335 [queue=-1] packet #1, 127.0.0.1:56728 -> 127.0.0.1:8080, sz=35 is delivered
+12:31:13.301421 HTTP/1.0 200 OK
+Connection: close
+Date: Sun Nov 18 12:31:13 EST 2018
+Content-Length: 48
+
+httpfs.go
+httpfs.log
+request.go
+response.go
+
+12:31:13.301448 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:56728, sz=35 is delivered
