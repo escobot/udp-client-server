@@ -160,7 +160,7 @@ func main() {
 			logger.Println("Error creating the response")
 			continue
 		}
-		logger.Println(string(resp))
+		p.Payload = resp
 		send(conn, *p)
 	}
 }
