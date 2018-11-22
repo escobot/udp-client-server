@@ -12,14 +12,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"sync/atomic"
-)
-
-var (
-	queueSize = int32(0)
-	incrQueue = func() int32 { return atomic.AddInt32(&queueSize, 1) }
-	decrQueue = func() int32 { return atomic.AddInt32(&queueSize, -1) }
-	currQueue = func() int32 { return atomic.LoadInt32(&queueSize) }
 )
 
 const (
@@ -95,12 +87,11 @@ func parsePacket(fromAddr *net.UDPAddr, data []byte) (*Packet, error) {
 
 // send sends the packet the associated destination of the packet.
 func send(conn *net.UDPConn, p Packet) {
-	decrQueue()
 	if _, err := conn.WriteToUDP(p.Raw(), p.ToAddr); err != nil {
 		logger.Printf("failed to deliver %s: %v\n", p, err)
 		return
 	}
-	logger.Printf("[queue=%d] packet %s is delivered\n", currQueue(), p)
+	logger.Printf("packet %s is delivered\n", p)
 }
 
 var (
