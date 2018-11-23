@@ -59,7 +59,7 @@ func ParseRequest(s string) (*Request, error) {
 		if headerLine == "\r\n" {
 			break
 		}
-		parts := regexp.MustCompile(`^([\w-]+): (.+)\r\n$`).FindStringSubmatch(headerLine)
+		parts := regexp.MustCompile(`^([\w-]+):\s?(.+)\r\n$`).FindStringSubmatch(headerLine)
 		if len(parts) != 3 {
 			return nil, fmt.Errorf("Error in the header lines %v", err)
 		}
