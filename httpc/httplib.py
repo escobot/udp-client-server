@@ -5,9 +5,6 @@ Comp 445 - Fall 2018
 HTTP Client Library
 """
 import socket
-import argparse
-import sys
-import json
 from urllib.parse import urlparse
 import ipaddress
 from packet import Packet
@@ -93,7 +90,7 @@ def send_req_tcp(url: str, port: int, req: str, verbose: bool):
             print(res.headers)
         print(res.body)
     except socket.timeout:
-        print("Connection to " + url + ":" + str(port) + " timed out")
+        print("Connection to " + url + ": " + str(port) + " timed out")
 
     finally:
         conn.close()
@@ -131,13 +128,13 @@ def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_po
         return res
 
 
-def get(url: str, headers=None, verbose=False):
+def get(url: str, headers=None, verbose=False, udp=False):
     """
     Makes a GET request and returns the response
     :param url:
     :param verbose: enables verbose mode
     :param headers:
-    :param body:
+    :param udp:
     :return: response from server
     """
 
@@ -162,33 +159,43 @@ def get(url: str, headers=None, verbose=False):
     # Headers
     if headers is None:
         headers = {}
-        headers.setdefault("Host", host)
-        headers.setdefault("User-Agent", "HttpClient-Concordia")
+        headers.setdefault("Host", " "+host+":"+str(port))
+        headers.setdefault("User-Agent", " "+"HttpClient-Concordia")
 
     # Add headers to request
     for k, v in headers.items():
-        req = req + k + ":" + v + "\r\n"
+        req = req + k + ": " + v + "\r\n"
     # The request needs to finish with two empty lines. took me 4 hours to figure this out on my own
     req = req + "\r\n"
+    res = ""
+    if not udp:
+        # Send request TCP
+        res = send_req_tcp(host, port, req, verbose)
+        # print("Reply: \n" + res)  # print response
+        if res.code >= 300 and res.code < 400:
+            print("Redirecting to: " + res.headers['Location'])
+            url = res.headers['Location'].strip()
+            return get(url, headers, verbose, False)
+        return res
 
-    # Send request
-    res = send_req_tcp(host, port, req, verbose)
-    # print("Reply: \n" + res)  # print response
-    if res.code >= 300 and res.code < 400:
-        print("Redirecting to: " + res.headers['Location'])
-        url = res.headers['Location'].strip()
-        return get(url, headers, verbose)
+    # Send request UDP
+    elif udp:
+        router_host = "localhost"
+        router_port = 3000
+        res = mimick_tcp_handshake(router_host, router_port, host, port, req, verbose)
+        return res
 
     return res
 
 
-def post(url: str, data="", headers=None, verbose=False):
+def post(url: str, data="", headers=None, verbose=False, udp=False):
     """
     Sends a POST request
     :param url:
     :param data: the body of the request
     :param verbose: enables verbose mode
     :param headers:
+    :param udp:
     :return:
     """
     # Parse URL components
@@ -212,30 +219,32 @@ def post(url: str, data="", headers=None, verbose=False):
     # Headers
     if headers is None:
         headers = {}
-        headers.setdefault("Host", host)
-        headers.setdefault("User-Agent", "HttpClient-Concordia")
-        headers.setdefault("Content-Length", str(len(data)))
+        headers.setdefault("Host", " "+host+":"+str(port))
+        headers.setdefault("User-Agent", " "+"HttpClient-Concordia")
+        headers.setdefault("Content-Length", " "+str(len(data)))
 
     # Add headers to request
     for k, v in headers.items():
-        req = req + k + ":" + v + "\r\n"
+        req = req + k + ": " + v + "\r\n"
     req = req + "\r\n"
     req = req + data + "\r\n"
     # The request needs to finish with two empty lines. took me 4 hours to figure this out on my own
     req = req + "\r\n"
 
     # Send request
-    res = send_req_tcp(host, port, req, verbose)
-    # print("Reply: \n" + res)  # print response
+    if udp:
+        router_host = "localhost"
+        router_port = 3000
+        res = mimick_tcp_handshake(router_host, router_port, host, port, req, verbose)
+    else:
+        res = send_req_tcp(host, port, req, verbose)
     return res
 
 
-def mimick_tcp_handshake(routerhost="localhost", routerport=3000, serverhost="localhost", serverport=8080):
-    msg = "Hello"
-    msg = msg + "\r\n" + "\r\n"
-    send_req_udp(routerhost, routerport, serverhost, serverport, 0, 1, msg)
+def mimick_tcp_handshake(router_host: str, router_port: int, server_host:str, server_port: int, msg: str, verbose=False):
+    res = send_req_udp(router_host, router_port, server_host, server_port, 0, 1, msg, verbose)
 
-    return
+    return res
 
 
 """
@@ -250,5 +259,3 @@ post("http://httpbin.org/post", "Nice teapot you got there.", True)
 # get("http://httpbin.org/status/418", None, True)
 # post("http://httpbin.org/post", "Nice teapot you got there.", None, True)
 # get("https://httpbin.org/redirect-to?url=http://httpbin.org/get&status_code=302", None, False)
-
-mimick_tcp_handshake()

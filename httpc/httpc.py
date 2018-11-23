@@ -14,17 +14,20 @@ def parse_get(args):
     """Parses the arguments from the command line in order to make a GET request"""
     url = args.url
     verbose = args.verbose
+    udp = args.udp
     if args.headers:
         headers = dict(kv.split(":") for kv in args.headers)
     else:
         headers = None
-    res = httplib.get(url, headers, verbose)
+    res = httplib.get(url, headers, verbose, udp)
+
 
 
 def parse_post(args):
     """Parses the arguments from the command line in order to make a GET request"""
     url = args.url
     verbose = args.verbose
+    udp = args.udp
     # Headers
     if args.headers:
         headers = dict(kv.split(":") for kv in args.headers)
@@ -41,14 +44,14 @@ def parse_post(args):
         else:
             print("POST request needs inline_data or file")
 
-    res = httplib.post(url, data, headers, verbose)
+    res = httplib.post(url, data, headers, verbose, udp)
     return
 
 
 # Command parser setup
 parser = argparse.ArgumentParser(
     prog="httpc",
-    usage="httpc (get|post) URL [-v] (-h \"k:v\")* [-d inline-data] [-f file]",
+    usage="httpc (get|post) URL [-v] (-h \"k:v\")* [-d inline-data] [-f file] [-udp]",
     description="Httpc is a command-line tool that uses TCP sockets to support HTTP protocol operations",
     epilog="",
     add_help=False)
@@ -63,6 +66,7 @@ get_parser.add_argument("-v", help="Prints more information on the requests and 
                         action="store_true", dest="verbose")
 get_parser.add_argument("-h", help="adds headers to the request. expected format: \"Key:value\".",
                         metavar="key:value", action="append", default=[], dest="headers")
+get_parser.add_argument("-udp", help="Uses UDP instead of TCP", action="store_true", dest="udp")
 get_parser.set_defaults(func=parse_get)
 
 # Post parser setup
@@ -77,6 +81,7 @@ data_group.add_argument("-d", help="Adds data to the body of a HTTP POST request
                         metavar="inline-data", dest="inline_data", default="")
 data_group.add_argument("-f", help="Adds the content of a file to the body of a HTTP POST request.",
                         metavar="file", dest="file")
+post_parser.add_argument("-udp", help="Uses UDP instead of TCP", action="store_true", dest="udp")
 post_parser.set_defaults(func=parse_post)
 
 # Parse arguments from command line
@@ -93,6 +98,8 @@ except AttributeError:
 For demo purposes
 run these
 
+======= TCP =======
+
 python httpc.py get http://httpbin.org/get
 
 python httpc.py get httpbin.org -h "Host: httpbin.org" -h "Accept: text/html,application/json"
@@ -102,5 +109,14 @@ python httpc.py get http://httpbin.org/status/418
 python httpc.py post http://httpbin.org/post -d "Nice teapot you got there."
 
 python httpc.py get http://httpbin.org/redirect-to?url=http://httpbin.org/get"&"status_code=302 -v
+
+======= UDP =======
+
+python httpc.py get "http://localhost:8080/httpfs.txt" -udp
+
+python httpc.py post localhost:8080/bar.txt -d "I love food" -udp
+
+python httpc.py post "http://localhost:8080/bar.txt" -d "food" -h "Content-Type:application/text" -h "Content-Length: 4" -v -udp
+
 """
 
