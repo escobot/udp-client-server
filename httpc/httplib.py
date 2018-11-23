@@ -102,6 +102,30 @@ def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_po
     peer_ip = ipaddress.ip_address(socket.gethostbyname(server_addr))
     conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     timeout = 5
+    print("sending SYN")
+    syn = Packet(packet_type=1,
+                seq_num=seq_num,
+                peer_ip_addr=peer_ip,
+                peer_port=server_port,
+                payload='')
+    conn.sendto(syn.to_bytes(), (router_addr, router_port))
+
+    print("waiting for SYN-ACK")
+    conn.settimeout(timeout)
+    syn.packet_type = -1
+    while syn.packet_type != 2:
+        resp, send = conn.recvfrom(1024)
+        recv_packet = Packet.from_bytes(resp)
+        syn.packet_type = recv_packet.packet_type
+    
+    print("Received SYN-ACK")
+    print("Sending ACK")
+    ack = Packet(packet_type=3,
+                seq_num=seq_num,
+                peer_ip_addr=peer_ip,
+                peer_port=server_port,
+                payload='')
+    conn.sendto(ack.to_bytes(), (router_addr, router_port))
     res = ""
     try:
         msg = req
