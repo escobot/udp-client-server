@@ -100,14 +100,16 @@ def send_req_tcp(url: str, port: int, req: str, verbose: bool):
         return res
 
 
-def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_port: int, req: str, verbose: bool):
+def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_port: int, packet_type: int, seq_num: int,
+                 req: str, verbose: bool):
     peer_ip = ipaddress.ip_address(socket.gethostbyname(server_addr))
     conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     timeout = 5
+    res = ""
     try:
-        msg = "Hello World"
-        p = Packet(packet_type=0,
-                   seq_num=1,
+        msg = req
+        p = Packet(packet_type=packet_type,
+                   seq_num=seq_num,
                    peer_ip_addr=peer_ip,
                    peer_port=server_port,
                    payload=msg.encode("UTF-8"))
@@ -120,12 +122,13 @@ def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_po
         p = Packet.from_bytes(response)
         print('Router: ', sender)
         print('Packet: ', p)
+        res = Response(p.payload.decode("UTF-8"))
         print('Payload: ' + p.payload.decode("UTF-8"))
     except socket.timeout:
         print('No response after {}s'.format(timeout))
     finally:
         conn.close()
-    return
+        return res
 
 
 def get(url: str, headers=None, verbose=False):
@@ -239,3 +242,5 @@ post("http://httpbin.org/post", "Nice teapot you got there.", True)
 # get("http://httpbin.org/status/418", None, True)
 # post("http://httpbin.org/post", "Nice teapot you got there.", None, True)
 # get("https://httpbin.org/redirect-to?url=http://httpbin.org/get&status_code=302", None, False)
+
+
