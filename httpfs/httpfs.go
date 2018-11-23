@@ -74,13 +74,13 @@ func parsePacket(fromAddr *net.UDPAddr, data []byte) (*Packet, error) {
 	p := Packet{}
 	p.Type = next(1)[0]
 	p.SeqNum = u32(next(4))
-	p.FromAddr = fromAddr
 	toAddr, err := net.ResolveUDPAddr("udp", fmt.Sprintf("%s:%d", net.IP(next(4)), u16(next(2))))
 	// If toAddr is loopback, it should be as same as the host of fromAddr.
 	if toAddr.IP.IsLoopback() {
 		toAddr.IP = fromAddr.IP
 	}
-	p.ToAddr = toAddr
+	p.ToAddr = fromAddr
+	p.FromAddr = toAddr
 	p.Payload = data[curr:]
 	return &p, err
 }
@@ -141,18 +141,27 @@ func main() {
 			logger.Println("invalid packet:", err)
 			continue
 		}
-		req, err := ParseRequest(string(p.Payload))
-		if err != nil {
-			logger.Println("Error parsing the request:", err)
-			continue
+		// ACK
+		if p.Type == 0 {
+			req, err := ParseRequest(string(p.Payload))
+			if err != nil {
+				logger.Println("Error parsing the request:", err)
+				continue
+			}
+			resp := createResponse(req)
+			if resp == nil {
+				logger.Println("Error creating the response")
+				continue
+			}
+			p.Payload = resp
+			send(conn, *p)
+
+			// syn
+		} else if p.Type == 1 {
+			p.Type = 2
+			fmt.Println(p.Type)
+			send(conn, *p)
 		}
-		resp := createResponse(req)
-		if resp == nil {
-			logger.Println("Error creating the response")
-			continue
-		}
-		p.Payload = resp
-		send(conn, *p)
 	}
 }
 
@@ -160,6 +169,9 @@ func createResponse(req *Request) (payload []byte) {
 	res := NewResponse()
 	filepath := *directory + req.Path
 
+	if strings.Contains(filepath, "/..") {
+		return res.Send(400, "BAD REQUEST: do not have access to other directories\r\n", "")
+	}
 	if req.Method == "GET" {
 		if req.Path == "/" {
 			files, err := readDirectory(*directory)
