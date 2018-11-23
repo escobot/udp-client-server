@@ -1,36 +1,36 @@
-12:05:42.413640 httpfs is listening at :8080
-12:05:42.413726 httpfs is running in verbose mode
-12:05:49.316088 &{GET / map[Host:localhost] HTTP/1.0 0xc000062300}
-12:05:49.316137 [queue=-1] packet #1, 127.0.0.1:47033 -> 127.0.0.1:8080, sz=35 is delivered
-12:05:49.316184 &{GET / map[Host:localhost] HTTP/1.0 0xc000062480}
-12:05:49.316204 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:47033, sz=35 is delivered
-12:13:59.875855 httpfs is listening at :8080
-12:13:59.875940 httpfs is running in verbose mode
-12:14:06.719656 &{GET / map[Host:localhost] HTTP/1.0 0xc000062300}
-12:14:06.719713 [queue=-1] packet #1, 127.0.0.1:47899 -> 127.0.0.1:8080, sz=35 is delivered
-12:14:06.719773 &{GET / map[Host:localhost] HTTP/1.0 0xc000062480}
-12:14:06.719799 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:47899, sz=35 is delivered
-12:31:07.382657 httpfs is listening at :8080
-12:31:07.382740 httpfs is running in verbose mode
-12:31:13.301279 HTTP/1.0 200 OK
-Content-Length: 48
-Connection: close
-Date: Sun Nov 18 12:31:13 EST 2018
-
-httpfs.go
-httpfs.log
-request.go
-response.go
-
-12:31:13.301335 [queue=-1] packet #1, 127.0.0.1:56728 -> 127.0.0.1:8080, sz=35 is delivered
-12:31:13.301421 HTTP/1.0 200 OK
-Connection: close
-Date: Sun Nov 18 12:31:13 EST 2018
-Content-Length: 48
-
-httpfs.go
-httpfs.log
-request.go
-response.go
-
-12:31:13.301448 [queue=-2] packet #1, 127.0.0.1:8080 -> 127.0.0.1:56728, sz=35 is delivered
+20:05:47.275813 httpfs is listening at :8080
+20:37:30.588806 Error parsing the request: Error in the request line: EOF
+20:40:22.978405 httpfs is listening at :8080
+20:40:31.783188 Error parsing the request: Error in the request line: EOF
+20:43:41.878347 httpfs is listening at :8080
+20:43:50.310999 packet #100, 127.0.0.1:3000 -> 127.0.0.1:36589, sz=0 is delivered
+20:43:50.313833 packet #1, 127.0.0.1:3000 -> 127.0.0.1:36589, sz=464 is delivered
+20:45:19.403468 httpfs is listening at :8080
+20:45:29.433839 packet #100, 127.0.0.1:3000 -> 127.0.0.1:41820, sz=0 is delivered
+20:47:59.717541 packet #100, 127.0.0.1:3000 -> 127.0.0.1:35317, sz=0 is delivered
+20:52:40.215302 packet #100, 127.0.0.1:3000 -> 127.0.0.1:40299, sz=0 is delivered
+20:53:06.574786 httpfs is listening at :8080
+20:53:12.732618 packet #100, 127.0.0.1:3000 -> 127.0.0.1:37173, sz=0 is delivered
+20:53:12.733008 packet #1, 127.0.0.1:3000 -> 127.0.0.1:37173, sz=464 is delivered
+20:56:20.706015 httpfs is listening at :8080
+20:56:26.083302 packet #100, 127.0.0.1:33685 -> 127.0.0.1:3000, sz=0 is delivered
+20:56:26.084122 packet #1, 127.0.0.1:33685 -> 127.0.0.1:3000, sz=464 is delivered
+21:00:33.423396 httpfs is listening at :8080
+21:00:43.699570 packet #100, 127.0.0.1:35790 -> 127.0.0.1:3000, sz=0 is delivered
+21:00:43.699979 packet #1, 127.0.0.1:35790 -> 127.0.0.1:3000, sz=166 is delivered
+21:09:31.685728 packet #100, 127.0.0.1:33614 -> 127.0.0.1:3000, sz=0 is delivered
+21:09:31.686113 packet #1, 127.0.0.1:33614 -> 127.0.0.1:3000, sz=166 is delivered
+21:12:04.441655 packet #100, 127.0.0.1:50765 -> 127.0.0.1:3000, sz=0 is delivered
+21:12:04.442018 packet #1, 127.0.0.1:50765 -> 127.0.0.1:3000, sz=166 is delivered
+21:12:31.797524 packet #100, 127.0.0.1:55020 -> 127.0.0.1:3000, sz=0 is delivered
+21:12:31.797834 packet #1, 127.0.0.1:55020 -> 127.0.0.1:3000, sz=157 is delivered
+21:13:39.414443 httpfs is listening at :8080
+21:13:45.722808 packet #100, 127.0.0.1:37502 -> 127.0.0.1:3000, sz=0 is delivered
+21:13:45.723542 packet #1, 127.0.0.1:37502 -> 127.0.0.1:3000, sz=166 is delivered
+21:15:47.928324 httpfs is listening at :8080
+21:15:55.715998 packet #100, 127.0.0.1:45850 -> 127.0.0.1:3000, sz=0 is delivered
+21:15:55.716939 packet #1, 127.0.0.1:45850 -> 127.0.0.1:3000, sz=166 is delivered
+21:16:37.661825 packet #100, 127.0.0.1:35733 -> 127.0.0.1:3000, sz=0 is delivered
+21:16:37.662167 packet #1, 127.0.0.1:35733 -> 127.0.0.1:3000, sz=6054 is delivered
+21:17:08.454570 packet #100, 127.0.0.1:44140 -> 127.0.0.1:3000, sz=0 is delivered
+21:17:08.455015 packet #1, 127.0.0.1:44140 -> 127.0.0.1:3000, sz=131 is delivered
