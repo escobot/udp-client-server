@@ -101,7 +101,7 @@ def send_req_tcp(url: str, port: int, req: str, verbose: bool):
 
 
 def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_port: int, packet_type: int, seq_num: int,
-                 req: str, verbose: bool):
+                 req: str, verbose=False):
     peer_ip = ipaddress.ip_address(socket.gethostbyname(server_addr))
     conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     timeout = 5
@@ -114,7 +114,7 @@ def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_po
                    peer_port=server_port,
                    payload=msg.encode("UTF-8"))
         conn.sendto(p.to_bytes(), (router_addr, router_port))
-        print('Send "{}" to router'.format(msg))
+        print('Send: \n"{}"\nto router'.format(msg))
         # Try to receive a response within timeout
         conn.settimeout(timeout)
         response, sender = conn.recvfrom(1024)
@@ -230,6 +230,14 @@ def post(url: str, data="", headers=None, verbose=False):
     return res
 
 
+def mimick_tcp_handshake(routerhost="localhost", routerport=3000, serverhost="localhost", serverport=8080):
+    msg = "Hello"
+    msg = msg + "\r\n" + "\r\n"
+    send_req_udp(routerhost, routerport, serverhost, serverport, 0, 1, msg)
+
+    return
+
+
 """
 For Demo purposes
 """
@@ -243,4 +251,4 @@ post("http://httpbin.org/post", "Nice teapot you got there.", True)
 # post("http://httpbin.org/post", "Nice teapot you got there.", None, True)
 # get("https://httpbin.org/redirect-to?url=http://httpbin.org/get&status_code=302", None, False)
 
-
+mimick_tcp_handshake()
