@@ -160,6 +160,9 @@ func createResponse(req *Request) (payload []byte) {
 	res := NewResponse()
 	filepath := *directory + req.Path
 
+	if strings.Contains(filepath, "/..") {
+		return res.Send(400, "BAD REQUEST: do not have access to other directories\r\n", "")
+	}
 	if req.Method == "GET" {
 		if req.Path == "/" {
 			files, err := readDirectory(*directory)
