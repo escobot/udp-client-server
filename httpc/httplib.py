@@ -219,9 +219,10 @@ def post(url: str, data="", headers=None, verbose=False, udp=False):
     # Headers
     if headers is None:
         headers = {}
-        headers.setdefault("Host", " "+host+":"+str(port))
-        headers.setdefault("User-Agent", " "+"HttpClient-Concordia")
-        headers.setdefault("Content-Length", " "+str(len(data)))
+        headers.setdefault("Host", "" + host + ":" + str(port))
+        headers.setdefault("User-Agent", "" + "HttpClient-Concordia")
+        headers.setdefault("Content-Length", "" + str(len(data)))
+        headers.setdefault("Content-Type", "" + "application/text")
 
     # Add headers to request
     for k, v in headers.items():
