@@ -9,6 +9,8 @@ import argparse
 import sys
 import json
 from urllib.parse import urlparse
+import ipaddress
+from packet import Packet
 
 
 class Response:
@@ -53,7 +55,7 @@ def handle_recv(sock: socket.socket):
     """
     Handles the receiving of a response from a server
     """
-    BUFFER_SIZE = 8*1024
+    BUFFER_SIZE = 1024
     response = b""
     while True:
         data = sock.recv(BUFFER_SIZE)
@@ -64,7 +66,7 @@ def handle_recv(sock: socket.socket):
     return response
 
 
-def send_req(url: str, port: int, req: str, verbose: bool):
+def send_req_tcp(url: str, port: int, req: str, verbose: bool):
     """
     Sends a request to the specified url:port
     and returns the response as a string
@@ -96,6 +98,34 @@ def send_req(url: str, port: int, req: str, verbose: bool):
     finally:
         conn.close()
         return res
+
+
+def send_req_udp(router_addr: str, router_port: int, server_addr: str, server_port: int, req: str, verbose: bool):
+    peer_ip = ipaddress.ip_address(socket.gethostbyname(server_addr))
+    conn = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    timeout = 5
+    try:
+        msg = "Hello World"
+        p = Packet(packet_type=0,
+                   seq_num=1,
+                   peer_ip_addr=peer_ip,
+                   peer_port=server_port,
+                   payload=msg.encode("UTF-8"))
+        conn.sendto(p.to_bytes(), (router_addr, router_port))
+        print('Send "{}" to router'.format(msg))
+        # Try to receive a response within timeout
+        conn.settimeout(timeout)
+        response, sender = conn.recvfrom(1024)
+        print('Waiting for a response')
+        p = Packet.from_bytes(response)
+        print('Router: ', sender)
+        print('Packet: ', p)
+        print('Payload: ' + p.payload.decode("UTF-8"))
+    except socket.timeout:
+        print('No response after {}s'.format(timeout))
+    finally:
+        conn.close()
+    return
 
 
 def get(url: str, headers=None, verbose=False):
@@ -139,7 +169,7 @@ def get(url: str, headers=None, verbose=False):
     req = req + "\r\n"
 
     # Send request
-    res = send_req(host, port, req, verbose)
+    res = send_req_tcp(host, port, req, verbose)
     # print("Reply: \n" + res)  # print response
     if res.code >= 300 and res.code < 400:
         print("Redirecting to: " + res.headers['Location'])
@@ -192,7 +222,7 @@ def post(url: str, data="", headers=None, verbose=False):
     req = req + "\r\n"
 
     # Send request
-    res = send_req(host, port, req, verbose)
+    res = send_req_tcp(host, port, req, verbose)
     # print("Reply: \n" + res)  # print response
     return res
 
