@@ -40,7 +40,9 @@ def parse_post(args):
         data = args.inline_data
     else:
         if args.file:
-            data = args.file  # To do file handling
+            file = args.file  # To do file handling
+            f = open(file, "r")
+            data = f.read()
         else:
             print("POST request needs inline_data or file")
 
@@ -117,6 +119,12 @@ python httpc.py get "http://localhost:8080/httpfs.txt" -udp
 python httpc.py post localhost:8080/bar.txt -d "I love food" -udp
 
 python httpc.py post "http://localhost:8080/bar.txt" -d "food" -h "Content-Type:application/text" -h "Content-Length:4" -v -udp
+
+
+MAKE A TEST.TXT file
+python httpc.py post localhost:8080/bar.txt -f test.txt -udp
+
+python httpc.py post localhost:8080/bar.txt -f demo.sh -udp
 
 """
 
