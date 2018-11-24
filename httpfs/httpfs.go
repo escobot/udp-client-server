@@ -136,32 +136,31 @@ func main() {
 			logger.Println("failed to receive message:", err)
 			continue
 		}
-		p, err := parsePacket(fromAddr, buf[:n])
-		if err != nil {
-			logger.Println("invalid packet:", err)
-			continue
-		}
-		// ACK
-		if p.Type == 0 {
-			req, err := ParseRequest(string(p.Payload))
+		go func(conn *net.UDPConn, fromAddr *net.UDPAddr, buf []byte, n int) {
+			p, err := parsePacket(fromAddr, buf[:n])
 			if err != nil {
-				logger.Println("Error parsing the request:", err)
-				continue
+				logger.Println("invalid packet:", err)
 			}
-			resp := createResponse(req)
-			if resp == nil {
-				logger.Println("Error creating the response")
-				continue
-			}
-			p.Payload = resp
-			send(conn, *p)
+			// ACK
+			if p.Type == 0 {
+				req, err := ParseRequest(string(p.Payload))
+				if err != nil {
+					logger.Println("Error parsing the request:", err)
+				}
+				resp := createResponse(req)
+				if resp == nil {
+					logger.Println("Error creating the response")
+				}
+				p.Payload = resp
+				send(conn, *p)
 
-			// syn
-		} else if p.Type == 1 {
-			p.Type = 2
-			fmt.Println(p.Type)
-			send(conn, *p)
-		}
+				// syn
+			} else if p.Type == 1 {
+				p.Type = 2
+				fmt.Println(p.Type)
+				send(conn, *p)
+			}
+		}(conn, fromAddr, buf, n)
 	}
 }
 
